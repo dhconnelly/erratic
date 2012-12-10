@@ -29,6 +29,14 @@ exports.testParse = function (t) {
     t.done();
 };
 
+exports.testGenerate = function (t) {
+    var rules = erratic.parse(grammar);
+    for (var i = 0; i < 100; i++) {
+        parse(erratic.generate(rules, 'list'));
+    }
+    t.done();
+};
+
 // ---------------------------------------------------------------------------
 // Parser for the test list grammar
 
