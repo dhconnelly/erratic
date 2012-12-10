@@ -6,7 +6,22 @@
 'use strict';
 
 exports.version = '0.0.0';
-exports.generate = function () {};
+exports.parse = parse;
+
+var prettybnf = imports.prettybnf;
+
+function extract(prop, o) {
+    return o[prop];
+}
+
+function parse(grammar) {
+    var ast = prettybnf.parse(grammar);
+    var rules = {};
+    ast.productions.forEach(function (prod) {
+        rules[prod.lhs.text] = prod.rhs.map(extract.bind(null, 'terms'));
+    });
+    return rules;
+}
 
 }(typeof exports === 'undefined' ? this.erratic = {} : exports, {
     prettybnf: this.prettybnf || require('prettybnf')
