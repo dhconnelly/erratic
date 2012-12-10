@@ -28,3 +28,65 @@ exports.testParse = function (t) {
     ]);
     t.done();
 };
+
+// ---------------------------------------------------------------------------
+// Parser for the test list grammar
+
+exports.testTestListParser = function (t) {
+    var list = '<foo bar <baz> <<baz> <bar foo>>>';
+    var ast = parse(list);
+    t.deepEqual(ast, ['foo', 'bar', ['baz'], [['baz'], ['bar', 'foo']]]);
+    t.done();
+};
+
+var parse = (function () {
+    var input, pos, EOF = 'EOF';
+
+    function eat(expected) {
+        var ch = peek();
+        if (expected !== undefined && ch !== expected) {
+            throw new SyntaxError('Expected ' + expected + ', got ' + ch);
+        }
+        pos++;
+        return ch;
+    }
+
+    function peek() {
+        return (pos < input.length) ? input[pos] : EOF;
+    }
+
+    function item() {
+        switch (peek()) {
+        case '<': return list();
+        case 'f': eat('f'); eat('o'); eat('o'); return 'foo';
+        case 'b': eat('b'); eat('a');
+            if (peek() === 'r') {
+                eat('r'); return 'bar';
+            }
+            eat('z'); return 'baz';
+        }
+        throw new SyntaxError('Unknown item');
+    }
+
+    function items() {
+        var ret = [item()];
+        while (peek() === ' ') {
+            eat(' ');
+            ret.push(item());
+        }
+        return ret;
+    }
+
+    function list() {
+        eat('<');
+        var ret = items();
+        eat('>');
+        return ret;
+    }
+
+    return function (str) {
+        input = str;
+        pos = 0;
+        return list();
+    };
+}());
