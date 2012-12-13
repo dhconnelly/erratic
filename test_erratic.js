@@ -9,7 +9,7 @@
 var erratic = require('./erratic'), prettybnf = require('prettybnf');
 
 exports.testVersion = function (t) {
-    t.equal(erratic.version, '0.0.0');
+    t.equal(erratic.version, '0.1.0');
     t.done();
 };
 

@@ -5,7 +5,7 @@
 (function (exports, imports) {
 'use strict';
 
-exports.version = '0.0.0';
+exports.version = '0.1.0';
 exports.parse = parse;
 exports.generate = generate;
 
