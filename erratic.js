@@ -1,6 +1,6 @@
 // Copyright 2012 Daniel Connelly.
 // Released under the Simplified (2-clause) BSD License.
-// See http://dhconnelly.com/prettybnf or the LICENSE file for more details.
+// See http://dhconnelly.com/erratic or the LICENSE file for more details.
 
 (function (exports, imports) {
 'use strict';
