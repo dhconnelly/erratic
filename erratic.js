@@ -24,16 +24,50 @@ function parse(grammar) {
     return rules;
 }
 
-function choose(things) {
-    return things[Math.floor(Math.random() * things.length)];
+function rand(max) {
+    return Math.floor(Math.random() * max);
 }
 
-function generateTerm(rules, term) {
-    return (term.type === 'terminal') ? term.text : generate(rules, term.text);
-}
+function generate(rules, rule, maxdepth) {
+    // create a new stack frame
+    // rule: the name of the rule
+    // rhs: the index of the chosen rhs
+    // acc: the expanded terms accumulated so far
+    function newframe(rule, rhs, acc) {
+        return { rule: rule, rhs: rhs, acc: acc };
+    }
 
-function generate(rules, rule) {
-    return choose(rules[rule]).map(generateTerm.bind(null, rules)).join('');
+    var stack = [newframe(rule, rand(rules[rule].length), [])],
+        retval;
+
+activation:
+    while (stack.length) {
+        var frame = stack[stack.length-1];
+        var rhs = rules[frame.rule][frame.rhs];
+        var acc = frame.acc;
+
+        if (retval) {
+            acc.push(retval);
+            retval = null;
+        }
+
+        while (acc.length < rhs.length) {
+            var term = rhs[acc.length];
+            var name = term.text;
+            // suspend frame and expand nonterminals
+            if (term.type !== 'terminal') {
+                stack.push(newframe(name, rand(rules[name].length), []));
+                continue activation;
+            }
+            // immediately accumulate terminals
+            acc.push(name);
+        }
+
+        stack.pop();
+        retval = acc.join('');
+    }
+
+    return retval;
 }
 
 }(typeof exports === 'undefined' ? this.erratic = {} : exports, {
